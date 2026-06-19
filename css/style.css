@@ -1,0 +1,812 @@
+/* css/style.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;700;900&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #0b0200;
+    font-family: 'Cairo', sans-serif;
+    color: #ffd8cc;
+    direction: rtl; /* Arabic RTL */
+}
+
+/* 3D WebGL Canvas */
+#webgl-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+/* UI Layer */
+.ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Gothic/Volcanic Panel style */
+.gothic-panel {
+    background: rgba(15, 3, 0, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 68, 0, 0.25);
+    border-radius: 12px;
+    padding: 24px;
+    pointer-events: auto;
+    box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(255, 68, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+header {
+    margin: 25px;
+    align-self: flex-start;
+}
+
+header h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.8rem;
+    color: #ff5500;
+    text-shadow: 0 0 12px rgba(255, 85, 0, 0.6);
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+header p {
+    font-size: 0.9rem;
+    color: #cca399;
+}
+
+/* Instructions / Interaction Tips */
+#instruction-box {
+    margin: 25px;
+    align-self: center;
+    text-align: center;
+    border-radius: 30px;
+    padding: 12px 30px;
+    border: 1px solid rgba(255, 68, 0, 0.4);
+    background: rgba(25, 5, 0, 0.9);
+}
+
+.pulse-glow {
+    animation: pulse-red 2.5s infinite;
+}
+
+@keyframes pulse-red {
+    0% { 
+        box-shadow: 0 0 0 0 rgba(255, 68, 0, 0.5), inset 0 0 5px rgba(255, 68, 0, 0.2); 
+    }
+    70% { 
+        box-shadow: 0 0 0 15px rgba(255, 68, 0, 0), inset 0 0 12px rgba(255, 68, 0, 0.4); 
+    }
+    100% { 
+        box-shadow: 0 0 0 0 rgba(255, 68, 0, 0), inset 0 0 5px rgba(255, 68, 0, 0.2); 
+    }
+}
+
+/* Sound Toggle Button */
+.gothic-btn {
+    background: rgba(255, 68, 0, 0.1);
+    border: 1px solid #ff4400;
+    color: #ffaa80;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-weight: bold;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    outline: none;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.gothic-btn:hover {
+    background: #ff4400;
+    color: #100200;
+    box-shadow: 0 0 20px rgba(255, 68, 0, 0.5);
+}
+
+.sound-btn {
+    pointer-events: auto; /* Allow clicks through pointer-events: none of .ui-overlay */
+    background: rgba(15, 3, 0, 0.7);
+    border: 1px solid rgba(255, 68, 0, 0.35);
+    color: #ffaa80;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    transition: all 0.3s ease;
+}
+
+.sound-btn:hover {
+    background: #ff4400;
+    color: #100200;
+    border-color: #ff4400;
+    box-shadow: 0 0 15px rgba(255, 68, 0, 0.6);
+}
+
+/* Door Detail Overlay Panel (Sliding Drawer from Right) */
+#door-overlay {
+    position: absolute;
+    top: 25px;
+    right: -450px; /* Hidden by default */
+    width: 400px;
+    max-height: calc(100% - 50px);
+    z-index: 20;
+    overflow-y: auto;
+    transition: right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    border-right: 5px solid #ff4400;
+    display: flex;
+    flex-direction: column;
+}
+
+#door-overlay.active {
+    right: 25px;
+}
+
+.door-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.6rem;
+    color: #ff5500;
+    text-shadow: 0 0 10px rgba(255, 85, 0, 0.4);
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 68, 0, 0.2);
+    padding-bottom: 8px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    background: none;
+    border: none;
+    color: #cca399;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: color 0.2s;
+    line-height: 1;
+}
+
+.close-btn:hover {
+    color: #ff4400;
+}
+
+.door-danger-badge {
+    display: inline-block;
+    align-self: flex-start;
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff5555;
+    border: 1px solid rgba(255, 0, 0, 0.4);
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+}
+
+.door-description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #ffd8cc;
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+/* Portal Preview Viewport */
+.portal-viewport-container {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background: #050100;
+    border: 2px solid rgba(255, 68, 0, 0.3);
+    border-radius: 8px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
+}
+
+.portal-glow-effect {
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,68,0,0.8) 0%, rgba(255,0,0,0.2) 60%, rgba(0,0,0,0) 100%);
+    filter: blur(8px);
+    opacity: 0.3;
+    transition: all 0.8s ease;
+}
+
+.portal-viewport-container.portal-active .portal-glow-effect {
+    opacity: 1;
+    width: 180px;
+    height: 180px;
+    animation: rotate-portal 4s linear infinite;
+    background: radial-gradient(circle, rgba(255,68,0,0.9) 0%, rgba(136,0,255,0.4) 40%, rgba(255,0,0,0.1) 70%, rgba(0,0,0,0) 100%);
+}
+
+@keyframes rotate-portal {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.15); filter: blur(5px); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+.portal-text-overlay {
+    z-index: 5;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ffaa80;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+    transition: color 0.3s;
+}
+
+.portal-viewport-container.portal-active .portal-text-overlay {
+    color: #ffffff;
+    text-shadow: 0 0 10px #ff4400, 0 0 20px #8800ff;
+    animation: text-pulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes text-pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+}
+
+/* Action buttons */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.action-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.95rem;
+}
+
+.glow-red {
+    background: rgba(255, 68, 0, 0.25);
+    border-color: #ff2200;
+}
+.glow-red:hover {
+    background: #ff3300;
+    box-shadow: 0 0 25px rgba(255, 34, 0, 0.7);
+}
+
+/* Audio visualizer visual feedback */
+.sound-indicator {
+    position: absolute;
+    bottom: 25px;
+    left: 140px;
+    z-index: 15;
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 30px;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.sound-indicator .bar {
+    width: 4px;
+    height: 5px;
+    background-color: #ff5500;
+    border-radius: 2px;
+    transition: height 0.1s ease;
+}
+
+.sound-indicator.playing .bar {
+    animation: bounce 0.8s ease infinite alternate;
+}
+
+.sound-indicator.playing .bar:nth-child(1) { animation-delay: 0.1s; }
+.sound-indicator.playing .bar:nth-child(2) { animation-delay: 0.4s; }
+.sound-indicator.playing .bar:nth-child(3) { animation-delay: 0.2s; }
+
+@keyframes bounce {
+    0% { height: 5px; }
+    100% { height: 30px; background-color: #ff8800; box-shadow: 0 0 10px #ff4400; }
+}
+
+/* 3D Joystick/Trackball UI styling */
+#joystick-container, #look-joystick-container {
+    position: absolute;
+    bottom: 25px;
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    pointer-events: auto;
+}
+
+#joystick-container {
+    left: 25px;
+}
+
+#look-joystick-container {
+    right: 25px;
+}
+
+#joystick-ring, #look-joystick-ring {
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 68, 0, 0.35);
+    background: rgba(15, 3, 0, 0.7);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: inset 0 0 15px rgba(255, 68, 0, 0.25), 0 8px 24px rgba(0, 0, 0, 0.7);
+    cursor: grab;
+    touch-action: none;
+}
+
+#joystick-ring:active, #look-joystick-ring:active {
+    cursor: grabbing;
+}
+
+#joystick-orb, #look-joystick-orb {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ff9933 0%, #ff1100 50%, #4a0000 100%);
+    box-shadow: 0 0 18px rgba(255, 34, 0, 0.8), inset 0 -3px 8px rgba(0, 0, 0, 0.7);
+    position: absolute;
+    pointer-events: none;
+    transition: transform 0.05s ease-out;
+}
+
+.joystick-label {
+    font-size: 0.7rem;
+    color: #cca399;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+    letter-spacing: 0.5px;
+}
+
+/* Scrollbar styles for gothic panel */
+.gothic-panel::-webkit-scrollbar {
+    width: 5px;
+}
+.gothic-panel::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+.gothic-panel::-webkit-scrollbar-thumb {
+    background: #ff4400;
+    border-radius: 10px;
+}
+
+/* Custom Gothic Video Player Overlay */
+#video-player-overlay {
+    display: none; /* hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 2, 0, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+}
+
+.video-close-btn {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    background: rgba(255, 68, 0, 0.1);
+    border: 1px solid rgba(255, 68, 0, 0.4);
+    color: #ffaa80;
+    font-size: 2.2rem;
+    cursor: pointer;
+    line-height: 1;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    z-index: 10100;
+}
+
+.video-close-btn:hover {
+    background: #ff4400;
+    color: #0b0200;
+    box-shadow: 0 0 20px rgba(255, 68, 0, 0.6);
+    transform: scale(1.1);
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #110000 url("../assets/gothic_wall.png") center center repeat;
+    box-shadow: inset 0 0 50px rgba(255, 68, 0, 0.8); /* flaming effect overlay */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* keeps original 9:16 aspect ratio */
+}
+
+.video-container video.object-cover {
+    object-fit: cover; /* cuts off top/bottom of 9:16 and centers it in 16:9 widescreen layout */
+}
+
+/* Custom Controls Bar */
+.video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(15, 3, 0, 0.95) 0%, rgba(15, 3, 0, 0.75) 80%, rgba(0, 0, 0, 0) 100%);
+    padding: 15px 20px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    pointer-events: auto;
+}
+
+.video-container:hover .video-controls,
+.video-controls:focus-within {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Timeline Progress Bar */
+.timeline-container {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.timeline {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    position: relative;
+    transition: height 0.1s ease;
+}
+
+.timeline-container:hover .timeline {
+    height: 6px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #ff4400;
+    border-radius: 2px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    box-shadow: 0 0 10px #ff4400;
+}
+
+.hover-progress {
+    height: 100%;
+    background: rgba(255, 68, 0, 0.3);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    pointer-events: none;
+}
+
+/* Controls row layout */
+.controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.controls-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    direction: ltr; /* keep player controls ltr for standard layout */
+}
+
+.controls-right {
+    display: flex;
+    align-items: center;
+    direction: ltr;
+}
+
+.control-btn {
+    background: none;
+    border: none;
+    color: #ffd8cc;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, transform 0.1s;
+    padding: 4px;
+}
+
+.control-btn:hover {
+    color: #ff5500;
+    transform: scale(1.1);
+}
+
+.control-btn svg.hidden {
+    display: none;
+}
+
+/* Volume Slider */
+.volume-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 70px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ff4400;
+    box-shadow: 0 0 5px #ff4400;
+    cursor: pointer;
+}
+
+/* Time display */
+.time-display {
+    font-size: 0.85rem;
+    color: #cca399;
+    font-weight: bold;
+    font-family: monospace;
+}
+
+/* Mobile responsive fixes */
+@media (max-width: 768px) {
+    #door-overlay {
+        right: -100%;
+        left: 0;
+        bottom: -100%;
+        top: auto;
+        width: 100%;
+        max-height: 50%;
+        border-right: none;
+        border-top: 5px solid #ff4400;
+        transition: bottom 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #door-overlay.active {
+        bottom: 0;
+        right: 0;
+    }
+    header {
+        margin: 15px;
+    }
+    header h1 {
+        font-size: 1.4rem;
+    }
+    .sound-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 1rem;
+    }
+    #instruction-box {
+        margin: 15px;
+        font-size: 0.8rem;
+        padding: 8px 15px;
+    }
+}
+
+/* Force Landscape Orientation Warning Overlay */
+#landscape-warning {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 3, 0, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 9999;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+    direction: rtl;
+}
+
+#landscape-warning .warning-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#landscape-warning h2 {
+    font-size: 1.8rem;
+    color: #ff5500;
+    text-shadow: 0 0 15px rgba(255, 85, 0, 0.5);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 900;
+}
+
+#landscape-warning p {
+    font-size: 1rem;
+    color: #ffd8cc;
+    max-width: 400px;
+    line-height: 1.6;
+}
+
+#landscape-warning span {
+    font-size: 0.9rem;
+    color: #cca399;
+    font-style: italic;
+}
+
+.phone-icon-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.phone-icon {
+    color: #ffaa80;
+    animation: rotate-phone 2.5s ease-in-out infinite;
+}
+
+.rotate-arrow {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    color: #ff4400;
+    animation: pulse-arrow 1.2s infinite alternate;
+}
+
+@keyframes rotate-phone {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(-90deg); }
+    100% { transform: rotate(0deg); }
+}
+
+@keyframes pulse-arrow {
+    from { opacity: 0.3; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1.1); }
+}
+
+/* Show landscape warning on portrait phones/tablets */
+@media (max-width: 950px) and (orientation: portrait) {
+    #landscape-warning {
+        display: flex;
+    }
+}
+
+/* Mobile Landscape Optimization (max-height: 520px) */
+@media (max-height: 520px) and (orientation: landscape) {
+    header {
+        margin: 10px;
+        padding: 8px 15px;
+    }
+    header h1 {
+        font-size: 1.1rem !important;
+    }
+    header p {
+        font-size: 0.7rem !important;
+    }
+    .sound-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+    #instruction-box {
+        display: none; /* Hide instruction box on small height screens to keep viewport clean */
+    }
+    #joystick-container {
+        bottom: 10px;
+        left: 10px;
+    }
+    #joystick-ring {
+        width: 70px;
+        height: 70px;
+    }
+    #joystick-orb {
+        width: 32px;
+        height: 32px;
+    }
+    #door-overlay {
+        width: 290px;
+        top: 10px;
+        right: -330px;
+        max-height: calc(100% - 20px);
+        padding: 15px;
+    }
+    #door-overlay.active {
+        right: 10px;
+    }
+    .door-title {
+        font-size: 1.2rem;
+    }
+    .door-danger-badge {
+        margin-bottom: 10px;
+    }
+    .door-description {
+        font-size: 0.8rem;
+        line-height: 1.4;
+        margin-bottom: 10px;
+    }
+    .portal-viewport-container {
+        height: 100px;
+        margin-bottom: 10px;
+    }
+    .portal-glow-effect {
+        width: 80px;
+        height: 80px;
+    }
+    .portal-viewport-container.portal-active .portal-glow-effect {
+        width: 100px;
+        height: 100px;
+    }
+    .action-btn {
+        padding: 8px;
+        font-size: 0.8rem;
+    }
+    .sound-indicator {
+        bottom: 10px;
+        left: 100px;
+    }
+}
