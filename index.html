@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ساحة قصر الجحيم - مدرسة الأرواح المفقودة</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls for camera interaction -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- GSAP for smooth camera animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Force Landscape Orientation Warning Overlay (for mobile devices) -->
+    <div id="landscape-warning">
+        <div class="warning-content">
+            <div class="phone-icon-container">
+                <svg class="phone-icon" viewBox="0 0 24 24" width="64" height="64" fill="currentColor">
+                    <path
+                        d="M16 1H8C6.34 1 5 2.34 5 4v16c0 1.66 1.34 3 3 3h8c1.66 0 3-1.34 3-3V4c0-1.66-1.34-3-3-3zm-1 18H9v-2h6v2zm2-4H7V4h10v11z" />
+                </svg>
+                <svg class="rotate-arrow" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                    <path
+                        d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm-6 8c0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3c-3.31 0-6-2.69-6-6z" />
+                </svg>
+            </div>
+            <h2>يرجى تدوير الهاتف بالعرض</h2>
+            <p>أروقة قصر الجحيم تتطلب شاشة عريضة لتستمتع بالتجربة الكاملة ثلاثية الأبعاد</p>
+            <span>Please rotate your device to landscape mode 🔄</span>
+        </div>
+    </div>
+
+    <!-- WebGL Container for 3D Hell Room -->
+    <div id="webgl-container"></div>
+
+    <!-- UI Overlay Layer -->
+    <div class="ui-overlay">
+        <!-- Header -->
+        <header>
+
+            <button id="sound-toggle-btn" class="gothic-btn sound-btn" title="تفعيل/كتم الصوت">🔇</button>
+
+        </header>
+
+        <!-- Instructions Box -->
+        <div id="instruction-box" class="gothic-panel pulse-glow">
+            <span>اختر أحد أبواب الفصول الدراسية للشياطين لعرض درس إبليس ومحتواه...</span>
+        </div>
+    </div>
+
+    <!-- Door Lore Panel (pops up when selecting a door) -->
+    <div id="door-overlay" class="gothic-panel">
+        <button class="close-btn" id="close-door-btn">&times;</button>
+        <div class="door-lore-content">
+            <h2 id="door-title" class="door-title">اسم الفصل الدراسي</h2>
+            <div class="door-danger-badge" id="door-danger">مستوى الخطر: مرتفع جداً</div>
+
+            <p id="door-description" class="door-description">
+                تفاصيل المنهج والدروس الشيطانية المقررة في هذا الفصل...
+            </p>
+            <div class="action-buttons">
+                <button id="open-portal-btn" class="gothic-btn action-btn glow-red">عرض الحلقة ودخول البعد</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Gothic Video Player Overlay -->
+    <div id="video-player-overlay">
+        <button id="close-video-btn" class="video-close-btn">&times;</button>
+
+        <div class="video-container">
+            <video id="custom-video" src=""></video>
+
+            <!-- Custom controls bar -->
+            <div class="video-controls">
+                <!-- Timeline progress bar -->
+                <div class="timeline-container" id="timeline-container">
+                    <div class="timeline" id="timeline">
+                        <div class="progress-bar" id="progress-bar"></div>
+                        <div class="hover-progress" id="hover-progress"></div>
+                    </div>
+                </div>
+
+                <div class="controls-row">
+                    <div class="controls-left">
+                        <button id="play-pause-btn" class="control-btn">
+                            <!-- Play Icon -->
+                            <svg class="play-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                <path d="M8 5v14l11-7z" />
+                            </svg>
+                            <!-- Pause Icon -->
+                            <svg class="pause-icon hidden" viewBox="0 0 24 24" width="24" height="24"
+                                fill="currentColor">
+                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                            </svg>
+                        </button>
+
+                        <div class="volume-container">
+                            <button id="mute-btn" class="control-btn">
+                                <!-- Sound On Icon -->
+                                <svg class="sound-on-icon" viewBox="0 0 24 24" width="24" height="24"
+                                    fill="currentColor">
+                                    <path
+                                        d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                                </svg>
+                                <!-- Mute Icon -->
+                                <svg class="mute-icon hidden" viewBox="0 0 24 24" width="24" height="24"
+                                    fill="currentColor">
+                                    <path
+                                        d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.21.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
+                                </svg>
+                            </button>
+                            <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="1">
+                        </div>
+
+                        <div class="time-display">
+                            <span id="current-time">0:00</span> / <span id="duration-time">0:00</span>
+                        </div>
+                    </div>
+
+                    <div class="controls-right">
+                        <button id="fullscreen-btn" class="control-btn">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                <path
+                                    d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ambient / Action Sound Controllers (invisible nodes for web audio) -->
+    <div id="audio-indicator" class="sound-indicator">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+
+    <!-- 3D Joystick/Trackball Control Sphere in UI -->
+    <div id="joystick-container">
+        <div id="joystick-ring">
+            <div id="joystick-orb"></div>
+        </div>
+        <div class="joystick-label">كرة تحريك الكادر</div>
+    </div>
+
+    <!-- Look Joystick on Right Side -->
+    <div id="look-joystick-container">
+        <div id="look-joystick-ring">
+            <div id="look-joystick-orb"></div>
+        </div>
+        <div class="joystick-label">كرة توجيه النظر</div>
+    </div>
+
+    <!-- Application Code -->
+    <script src="js/data.js"></script>
+    <script src="js/textures.js"></script>
+    <script src="js/interaction.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+
+</html>
